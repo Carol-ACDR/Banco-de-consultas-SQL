@@ -1,0 +1,210 @@
+CREATE DATABASE ATVBD4;
+USE ATVBD4;
+CREATE TABLE PROFESSOR (
+Nome varchar(50)not null,
+SNome varchar(50)not null,
+Matricula integer primary key,
+DataNasc Date not null,
+Sexo char not null,
+Salario Numeric(10,2) not null,
+Matric_Coord_Area integer,
+Depto integer);
+CREATE TABLE Departamento (
+Nome varchar(50)not null,
+Sigla varchar(10)not null,
+Codigo integer primary key,
+Coordenador integer);
+CREATE TABLE Projeto (
+Nome varchar(50)not null,
+Codigo integer primary key,
+Depto integer,
+FOREIGN key(Depto) REFERENCES Departamento(Codigo),
+Duraçao integer not null);
+CREATE TABLE TRABALHA_EM (
+MatricProf integer,
+CodProj integer,
+primary key(MatricProf,CodProj),
+FOREIGN key(MatricProf) REFERENCES PROFESSOR(Matricula),
+FOREIGN key(CodProj) REFERENCES Projeto(Codigo),
+Horas time not null);
+CREATE TABLE Dependente (
+MatricProf integer,
+Nome varchar(50)not null,
+RG varchar(12),
+PRIMARY key(MatricProf,RG),
+
+FOREIGN key(MatricProf) REFERENCES PROFESSOR(Matricula),
+DataNasc Date not null,
+Sexo char not null);
+CREATE TABLE TELEFONE (
+MatricProf integer,
+telefone integer,
+primary key(MatricProf,telefone),
+FOREIGN key(MatricProf) REFERENCES PROFESSOR(Matricula));
+CREATE TABLE EMAIL (
+MatProf integer,
+email varchar(50)not null,
+primary key(MatProf,email));
+
+USE ATVBD4;
+ALTER TABLE PROFESSOR
+ADD FOREIGN KEY (Matric_Coord_Area) REFERENCES PROFESSOR(Matricula);
+USE ATVBD4;
+ALTER TABLE PROFESSOR
+ADD CONSTRAINT FOREIGN KEY (Depto) REFERENCES departamento(codigo);
+USE ATVBD4;
+ALTER TABLE departamento
+ADD CONSTRAINT FOREIGN KEY (Coordenador) REFERENCES professor(Matricula);
+USE ATVBD4;
+INSERT INTO departamento(Nome,Sigla,Codigo) VALUES ('Tec.
+Telematica','DTT',121),('Tec. Construção de Edifícios','DCE',122),('Eng.
+Computação','DEC',125);
+
+USE ATVBD4;
+INSERT INTO professor(Nome,SNome,Matricula,DataNasc,Sexo,Salario,Depto) VALUES
+('Pedro','Pereira da Siva',121003,19820325,'M',4000.00,121),
+('José Maria','Campos',121031,19780410,'M',7000.00,121),
+('Bento','Diniz Costa',122045,19801127,'M',4000.00,122),
+('Ana Clara','Araújo Santos',122047,19941230,'F',7200.00,122),
+('Joana Maria','Pereira',125332,19900612,'F',4500.00,125),
+('João Carlos','Matos Cavalcanti',125335,19760722,'M',3700.00,125),
+('Maria Luiza','Machado',125331,19740816,'F',6800.00,125);
+USE ATVBD4;
+UPDATE departamento
+SET Coordenador = 121031
+WHERE Nome = 'Tec. Telemática';
+
+USE ATVBD4;
+UPDATE departamento
+SET Coordenador = 122047
+WHERE Nome = 'Tec. Construção de Edifícios';
+USE ATVBD4;
+UPDATE departamento
+SET Coordenador = 125331
+WHERE Nome = 'Eng. Computação';
+
+USE ATVBD4;
+UPDATE professor
+SET Matric_Coord_Area = 121003
+WHERE Nome = 'José Maria';
+USE ATVBD4;
+UPDATE professor
+SET Matric_Coord_Area = 122045
+WHERE Nome = 'Ana Clara';
+USE ATVBD4;
+UPDATE professor
+SET Matric_Coord_Area = 125332
+WHERE Nome = 'João Carlos';
+USE ATVBD4;
+UPDATE professor
+SET Matric_Coord_Area = 125332
+WHERE Nome = 'Maria Luiza';
+
+USE ATVBD4;
+INSERT INTO Projeto(Nome, Codigo, Depto, Duraçao) VALUES
+('Eletricidade Estatica',0,125,200),('Wi-fi',1,121,205),('Concreto',2,122,220);
+USE ATVBD4;
+INSERT INTO TRABALHA_EM(MatricProf, CodProj, Horas) VALUES
+(125332,0,8),(121003,1,8),(122045,2,8);
+USE ATVBD4;
+INSERT INTO dependente(MatricProf, Nome, RG, Sexo, DataNasc) VALUES
+(125332,'Claudia Baetas','123456789-01','F',20200101),(121003,'Laura
+Medeiros','987654321-01','F',20221116),(121003,'Henrique
+Lopes','214365879-01','M',20220308);
+USE ATVBD4;
+INSERT INTO TELEFONE (MatricProf, telefone) VALUES
+
+(125332,56785678),(121003,12341234),(121003,43214321);
+USE ATVBD4;
+INSERT INTO EMAIL (MatProf, email) VALUES
+(125332,'Joana@yahoo.com.br'),(121003,'Pedro@yahoo.com.br'),(122045,'Bento@yahoo.c
+om.br');
+PRIMEIRA CONSULTA:
+USE ATVBD4;
+SELECT nome,RG,DataNasc
+FROM dependente
+WHERE Sexo = 'F'
+SEGUNDA CONSULTA:
+USE ATVBD4;
+SELECT DISTINCT salario
+FROM professor
+ORDER BY Salario DESC
+TERCEIRA CONSULTA:
+USE ATVBD4;
+INSERT INTO Projeto(Nome, Codigo, Depto, Duraçao) VALUES
+('Aplicações do NoSQL',3,125,500);
+USE ATVBD4;
+UPDATE projeto
+SET Nome = 'Aplicações de Big Data'
+WHERE Nome = 'Aplicações do NoSQL';
+QUARTA CONSULTA:
+USE ATVBD4;
+SELECT Matricula, Nome
+FROM professor
+WHERE DataNasc>= '1970-01-01'
+ORDER BY DataNasc
+QUINTA CONSULTA
+USE ATVBD4;
+SELECT Nome
+FROM professor
+WHERE Snome LIKE '%Pereira%' AND DataNasc BETWEEN'1980-01-01' AND
+'1989-12-31'
+ORDER BY DataNasc DESC;
+
+SEXTA CONSULTA
+USE ATVBD4;
+SELECT Nome, DataNasc
+FROM dependente
+Where DataNasc = (SELECT Max(DataNasc) FROM dependente)
+
+SETIMA CONSULTA:
+USE ATVBD4;
+SELECT Matricula, Nome
+FROM professor
+WHERE Sexo = 'F' AND (Nome LIKE '%Maria%' OR Snome LIKE '%Maria%')
+ORDER BY Nome DESC;
+OITAVA CONSULTA:
+USE ATVBD4;
+SELECT Depto, COUNT(*) as 'Quantidade'
+FROM projeto
+GROUP BY depto;
+NONA CONSULTA:
+USE ATVBD4;
+SELECT AVG(salario)
+FROM professor
+WHERE Depto != 121 AND Depto != 125 AND salario BETWEEN 4000.00 AND 7000.00;
+Decima consulta:
+USE ATVBD4;
+SELECT departamento.nome, departamento.codigo
+FROM professor,departamento
+where professor.depto = departamento.codigo
+GROUP by Depto
+HAVING Count(professor.Depto) >2
+DECIMA PRIMEIRA CONSULTA:
+USE ATVBD4;
+SELECT professor.Nome, professor.SNome,professor.Matricula
+FROM professor,departamento
+where professor.depto = departamento.codigo AND departamento.Nome = 'Eng.
+Computação'
+
+DECIMA SEGUNDA CONSULTA:
+USE ATVBD4;
+INSERT INTO EMAIL (MatProf, email) VALUES
+(125335,'João@yahoo.com.br');
+USE ATVBD4;
+SELECT professor.Nome, email.email,professor.Matricula
+FROM professor,email
+where professor.Matricula = email.MatProf AND professor.Nome = 'João Carlos'
+DECIMA TERCEIRA CONSULTA:
+USE ATVBD4;
+SELECT professor.Nome
+FROM professor,departamento
+where professor.Matricula = departamento.Coordenador AND departamento.Nome = 'Tec.
+Telemática'
+DECIMA QUARTA CONSULTA:
+USE ATVBD4;
+SELECT professor.nome
+FROM professor
+WHERE NOT EXISTS (SELECT dependente.MatricProf
+FROM dependente
+WHERE professor.Matricula = dependente.MatricProf)
